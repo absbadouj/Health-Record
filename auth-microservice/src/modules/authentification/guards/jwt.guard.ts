@@ -7,7 +7,8 @@ import {
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-import { IS_PUBLIC_KEY } from '../../../decorators/public.decorator';
+import { IS_PUBLIC_KEY } from '../../../framework/decorators/public.decorator';
+import { UnauthorizedExceptionFilter } from 'src/framework/filters/UnauthorizedException';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
@@ -21,10 +22,14 @@ export class JwtAuthGuard implements CanActivate {
         const isPublic = this.isPublic(context);
         if (isPublic) {
             return true;
-        } else {
-            this.verifyToken(context);
         }
-        return true;
+        try {
+            await this.verifyToken(context);
+            return true;
+        } catch (error) {
+
+            throw error;
+        }
     }
 
     private isPublic(context: ExecutionContext): boolean {
@@ -43,7 +48,7 @@ export class JwtAuthGuard implements CanActivate {
         const request = context.switchToHttp().getRequest();
         const token = this.extractTokenFromHeader(request);
         if (!token) {
-            throw new UnauthorizedException();
+            throw new UnauthorizedExceptionFilter();
         }
         try {
             const payload = await this._jwtService.verifyAsync(
@@ -51,7 +56,7 @@ export class JwtAuthGuard implements CanActivate {
             );
             request['user'] = payload;
         } catch {
-            throw new UnauthorizedException();
+            throw new UnauthorizedExceptionFilter();
         }
     }
 }

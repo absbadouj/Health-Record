@@ -7,7 +7,8 @@ export class MyCustomKeyInterceptor implements NestInterceptor {
     intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
         const req: Request & { user: { id: string } } = context.switchToHttp().getRequest();
 
-        // to refactor
+        // Todo: to refactor
+        // use pattern of user-id-path-param-method
         const cacheKey = "";
 
         // Set the cache key on the context.

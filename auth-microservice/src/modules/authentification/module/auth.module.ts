@@ -9,10 +9,10 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategyService } from '../jwt/service/jwt-strategy.service';
 import { APP_GUARD } from '@nestjs/core';
-import { MyCustomKeyInterceptor } from 'src/interceptors/custom-cach.interceptor';
+import { MyCustomKeyInterceptor } from 'src/framework/interceptors/custom-cach.interceptor';
 import { JwtAuthGuard } from '../guards/jwt.guard';
-import { ConfigurationModule } from '../../../configuration/configuration.module';
-import { ConfigurationService } from '../../../configuration/configuration.service';
+import { ConfigurationModule } from '../../../framework/configuration/configuration.module';
+import { ConfigurationService } from '../../../framework/configuration/configuration.service';
 
 @Module({
   imports: [
@@ -20,10 +20,7 @@ import { ConfigurationService } from '../../../configuration/configuration.servi
     PrismaModule,
     ConfigurationModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
-    JwtModule.register({
-      secret: process.env.JWT_SECRET || 'secret',
-      signOptions: { expiresIn: '1h' },
-    }),
+    JwtModule,
   ],
   providers: [
     AuthService,

@@ -1,9 +1,18 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseFilters, UseGuards } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { UserService } from '../service/user.service';
-import { CreateUserDto } from '../../../interfaces/user.dto';
+import { CreateUserDto } from '../../../framework/interfaces/user.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { UnauthorizedExceptionFilter } from 'src/framework/filters/UnauthorizedException';
+import { HttpExceptionFilter } from 'src/framework/filters/HttpExceptionFilter';
+import { PrismaClientExceptionFilter } from 'src/framework/filters/PrismaExceptionFilter';
 
 @Controller('users')
+@UseGuards(AuthGuard('jwt'))
+@UseFilters(new HttpExceptionFilter())
+@UseFilters(new UnauthorizedExceptionFilter())
+@UseFilters(new PrismaClientExceptionFilter())
+
 export class UserController {
     constructor(private readonly _userService: UserService) { }
 
